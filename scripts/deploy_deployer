@@ -1,0 +1,17 @@
+#!/bin/bash
+# deploy asg-deployer
+# assume-role to the correct account
+set -e
+
+go build . # Build step for your operating system
+
+./scripts/build_lambda_zip
+
+step deploy                            \
+  -lambda "coinbase-step-asg-deployer" \
+  -step "coinbase-step-asg-deployer"   \
+  -states "$(./step-asg-deployer json)"\
+  -project "coinbase/step-asg-deployer"\
+  -config "development"
+
+rm lambda.zip
