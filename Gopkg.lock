@@ -66,8 +66,8 @@
     "service/sns/snsiface",
     "service/sts"
   ]
-  revision = "9b0098a71f6d4d473a26ec8ad3c2feaac6eb1da6"
-  version = "v1.13.32"
+  revision = "31bd69f7db00cbf3d85d129e16d42304cb6e455f"
+  version = "v1.13.44"
 
 [[projects]]
   branch = "master"
@@ -85,7 +85,7 @@
     "utils/run",
     "utils/to"
   ]
-  revision = "fa8a0b43559ec7279940d6d1b6653fc7a21bd7a5"
+  revision = "e67b66b9d455af81d116d986d84a1ef60507dca2"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
@@ -96,8 +96,8 @@
 [[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
-  revision = "5e9692864e22d02ac79e2fa499cffb00520b4fea"
-  version = "v1.34.0"
+  revision = "6529cf7c58879c08d927016dde4477f18a0634cb"
+  version = "v1.36.0"
 
 [[projects]]
   branch = "master"
@@ -125,6 +125,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9ed02184b457ff14aed901340bf436e6a7dd179d891c4f249348dadbdfbf3ec9"
+  inputs-digest = "aac4ffe3489484a6372c99e6c931ad04d6313a9c4a61be765c4bc6fcbca9ec49"
   solver-name = "gps-cdcl"
   solver-version = 1
