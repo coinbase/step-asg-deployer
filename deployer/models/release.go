@@ -108,7 +108,6 @@ func (release *Release) SetDefaultRegionAccount(region *string, account *string)
 		release.AwsRegion = region
 	}
 
-	// Also set the bucket to the region this is being executed in
 	if is.EmptyStr(release.Bucket) && account != nil {
 		release.Bucket = to.Strp(fmt.Sprintf("coinbase-step-asg-deployer-%v", *account))
 	}
