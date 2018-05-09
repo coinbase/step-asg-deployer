@@ -1,40 +1,40 @@
-# Step Auto Scaling Group (ASG) Deployer
+# Step Auto Scaling Group (ASG) Deployer a.k.a. Asgard
 
-<img src="./assets/sad-logo.png" align="right" alt="SAD" />
+<img src="./assets/sad-logo.png" align="right" alt="Asgard" />
 
-Deploy your [12-factor-applications](https://12factor.net/) to AWS easily and securely with the [Step](https://github.com/coinbase/step) [Auto-Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html) (ASG) Deployer (SAD).
+Deploy your [12-factor-applications](https://12factor.net/) to AWS easily and securely with the [Step](https://github.com/coinbase/step) [Auto-Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html) (ASG) Deployer (Asgard).
 
-SAD's goals/requirements/features are:
+Asgard's goals/requirements/features are:
 
 1. **Ephemeral Blue/Green**: create new instances, wait for them to become healthy, delete old instances.
 1. **Declarative**: describe what a successful release looks like, not how to deploy it.
 1. **Scalable**: can scale both vertically (larger instances) and horizontally (more instances).
-1. **Secure**: resources are verified to ensure that they cannot accidentally or maliciously be used incorrectly.
+1. **Secure**: resources are verified to ensure that they cannot accidentally or maliciously be used.
 1. **Gracefully Fail**: handle failures to recover and roll back with no/minimal impact to users.
 1. **Configuration Parity**: minimize divergence between production, staging and development environments by keeping releases as similar as possible.
 1. **Cattle not Pets**: treat compute instances as disposable and ephemeral.
-1. **No Deployer Configuration**: no configuration and minimal setup needed to get SAD up and running.
+1. **No Deployer Configuration**: no configuration and minimal setup needed to get Asgard up and running.
 1. **Multi Account**: one deployer for all AWS accounts.
 
 ### Getting Started
 
-SAD has two core parts, an [AWS Lambda Function](https://aws.amazon.com/lambda/) (with a role) and an [AWS Step Function](https://docs.aws.amazon.com/step-functions/latest/dg/getting-started.html). To bootstrap them into an AWS first we need to create the resources with [GeoEngineer](https://github.com/coinbase/geoengineer) which requires [`ruby`](https://www.ruby-lang.org/en/) and [`terraform`](https://www.terraform.io/):
+Asgard has two core parts, an [AWS Lambda Function](https://aws.amazon.com/lambda/) (with a role) and an [AWS Step Function](https://docs.aws.amazon.com/step-functions/latest/dg/getting-started.html). To bootstrap them into an AWS first we need to create the resources with [GeoEngineer](https://github.com/coinbase/geoengineer) which requires [`ruby`](https://www.ruby-lang.org/en/) and [`terraform`](https://www.terraform.io/):
 
 ```bash
 bundle install
 ./scripts/geo apply resources/step-asg-deployer.rb
 ```
 
-To deploy SAD we use [`step`](https://github.com/coinbase/step):
+To deploy Asgard we use [`step`](https://github.com/coinbase/step):
 
 ```bash
 git pull # pull down new code
 ./scripts/bootstrap
 ```
 
-#### Testing SAD with deploy-test
+#### Testing Asgard with deploy-test
 
-Our SAD test project is `coinbase/deploy-test` that has one service `web` which is a nginx server to be mounted behind a [Elastic Load Balancer](https://aws.amazon.com/elasticloadbalancing/) (ELB) and [Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) target group. The service instances have a [security group](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html) and [instance profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html).
+Our Asgard test project is `coinbase/deploy-test` that has one service `web` which is a nginx server to be mounted behind a [Elastic Load Balancer](https://aws.amazon.com/elasticloadbalancing/) (ELB) and [Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) target group. The service instances have a [security group](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html) and [instance profile](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html).
 
 To create the AWS resources for `deploy-test`:
 
@@ -79,28 +79,28 @@ runcmd:
  - docker run -d --restart always --name test_server -p 8000:80 nginx
 ```
 
-To release `deploy-test` with SAD we send the release file to the `step-asg-deployer` executable:
+To release `deploy-test` with Asgard we send the release file to the `step-asg-deployer` executable:
 
 ```bash
 step-asg-deployer deploy deploy-test-release.json
 ```
 
-<img src="./assets/sad-deploy.gif" alt="SAD deploy" />
+<img src="./assets/sad-deploy.gif" alt="Asgard deploy" />
 
-`step-asg-deployer deploy ... ` builds a release from `deploy-test-release.json` and sends to the SAD step function in AWS, that then:
+`step-asg-deployer deploy ... ` builds a release from `deploy-test-release.json` and sends to the Asgard step function in AWS, that then:
 
 1. validates the sent release and any referenced resources.
 1. created a new ASG for `web` with configured to start an nginx server.
 1. waits for the EC2 instances in the ASG to become healthy behind the ELB and target group that check for the server to be available.
 1. When the instances become healthy the old ASG and its instances are deleted and terminated.
 
-### SAD Release
+### Asgard Release
 
-A SAD release is a request to deploy a **Project** **Configuration**. A **Project** is a code-base typically named with `org/name`, a **Configuration** is the environment the project is being deployed into, e.g. `development`, `production`.
+A Asgard release is a request to deploy a **Project** **Configuration**. A **Project** is a code-base typically named with `org/name`, a **Configuration** is the environment the project is being deployed into, e.g. `development`, `production`.
 
 Each release can define 1-to-many **Services**; each service is a logical group of servers, e.g. `web` or `worker`, that maps to a single auto-scaling group.
 
-SAD takes a release and moves it through a state machine:
+Asgard takes a release and moves it through a state machine:
 
 <img src="./assets/sad-success.png" alt="sad state diagram"/>
 
@@ -142,7 +142,7 @@ Services can also have an **Instance Profile** defined by the `profile` key that
 
 #### Scale
 
-SAD makes it easy to scale both vertically and horizontally. To scale `deploy-test` we add to the release:
+Asgard makes it easy to scale both vertically and horizontally. To scale `deploy-test` we add to the release:
 
 ```yaml
 { ...
@@ -191,9 +191,9 @@ The `autoscaling` key defines the horizontal scaling of a service:
 
 #### User Data
 
-**Do not put sensitive data into user data**. User data is not treated by SAD as secure information, it is difficult to secure with IAM, and it is very [limited in size](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html#instancedata-add-user-data). We recommend using [Vault](https://www.vaultproject.io/), [AWS Parameter store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-paramstore.html), or [KMS encrypted S3](https://docs.aws.amazon.com/kms/latest/developerguide/services-s3.html) authenticated by a service's instance profile.
+**Do not put sensitive data into user data**. User data is not treated by Asgard as secure information, it is difficult to secure with IAM, and it is very [limited in size](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html#instancedata-add-user-data). We recommend using [Vault](https://www.vaultproject.io/), [AWS Parameter store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-paramstore.html), or [KMS encrypted S3](https://docs.aws.amazon.com/kms/latest/developerguide/services-s3.html) authenticated by a service's instance profile.
 
-The `user_data` in the release is the plain text [instance metadata](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) sent to initialize each instance. SAD will replace some strings with information about the release, project, config and service, e.g.:
+The `user_data` in the release is the plain text [instance metadata](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) sent to initialize each instance. Asgard will replace some strings with information about the release, project, config and service, e.g.:
 
 ```yaml
 ...
@@ -206,7 +206,7 @@ write_files:
       {{SERVICE_NAME}}
 ```
 
-SAD will replace `{{PROJECT_NAME}}` with the name of the project and `{{SERVICE_NAME}}` with the name of the service. This can be useful for getting service specific configuration and logging.
+Asgard will replace `{{PROJECT_NAME}}` with the name of the project and `{{SERVICE_NAME}}` with the name of the service. This can be useful for getting service specific configuration and logging.
 
 If `user_data` is equal to `{{USER_DATA_FILE}}` and deployed with `step-asg-deployer` the value will be replaced with the contents of the `<release_file>.userdata`, e.g. `deployer-test-release.json.userdata`.
 
@@ -235,7 +235,7 @@ These can be used to gracefully shutdown instances, which is necessary if a serv
 
 #### Halt
 
-SAD supports manually stopping a release while is it being deployed. Just execute:
+Asgard supports manually stopping a release while is it being deployed. Just execute:
 
 ```
 step-asg-deployer halt deploy-test-release.json
@@ -245,13 +245,13 @@ This will:
 
 1. Find the currently running deploy for the project configuration
 2. Write a `halt` file to S3
-3. Wait for SAD to detect the halt file and fail the deploy
+3. Wait for Asgard to detect the halt file and fail the deploy
 
-<img src="./assets/sad-halt.gif" alt="SAD deploy" />
+<img src="./assets/sad-halt.gif" alt="Asgard deploy" />
 
 Halt is not a guarantee that the release will not be deployed, if executed too late the release will still occur.
 
-**DO NOT** use `Stop execution` of the SAD step function as it will not clean up resources and leave AWS in a bad state.
+**DO NOT** use `Stop execution` of the Asgard step function as it will not clean up resources and leave AWS in a bad state.
 
 ### Security
 
@@ -296,7 +296,7 @@ Who can execute the step function, and who can upload to S3 are the two permissi
 
 #### Authorization
 
-All resources that can be used in a SAD deploy must opt-in using tags or paths. Additionally, service resources require specific tags or paths denoting which project/config/service can use them.
+All resources that can be used in a Asgard deploy must opt-in using tags or paths. Additionally, service resources require specific tags or paths denoting which project/config/service can use them.
 
 Assets uploaded to S3 are in the path `/<ProjectName>/<ConfigName>` so limiting who can `s3:PutObject` to a path can be used to limit what project-configs they can deploy.
 
