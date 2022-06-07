@@ -816,7 +816,7 @@ GEM
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     highline (2.0.3)
-    jmespath (1.4.0)
+    jmespath (1.6.1)
     json-schema (2.8.1)
       addressable (>= 2.4)
     multipart-post (2.1.1)
